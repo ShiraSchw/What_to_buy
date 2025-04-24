@@ -72,11 +72,12 @@ for i, entry in enumerate(st.session_state.shopping_list):
         """, unsafe_allow_html=True)
 
 # --- מחיקת פריט דרך קישור ---
-remove_index = st.query_params().get("remove")
+query_params = st.query_params
+remove_index = query_params.get("remove")
 if remove_index:
     try:
         del st.session_state.shopping_list[int(remove_index[0])]
-        st.query_params()  # מחיקת הפרמטר מה-URL
+        st.query_params.clear()  # מחיקת הפרמטר מה-URL
         st.rerun()
     except:
         pass
