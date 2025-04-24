@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="צריך לקנות", page_icon="🛒", layout="centered")
 
-# עיצוב כהה עם גופן יפה
+# CSS – עיצוב כהה עם גופן יפה
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
@@ -39,7 +39,8 @@ st.markdown("""
         border: 1px solid #333;
     }
 
-    .stTextInput > div > input {
+    .stTextInput > div > input,
+    .stNumberInput > div > input {
         background-color: #2C2C2C;
         color: white;
     }
@@ -53,33 +54,43 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# כותרות
+# כותרת
 st.markdown('<div class="title">צריך לקנות 🛍️</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">רשימת קניות יפיפייה באווירה לילית</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">רשימת קניות עם כמויות – מינימליסטי ומדויק</div>', unsafe_allow_html=True)
 
-# התחלת רשימה
+# התחלת הרשימה
 if "shopping_list" not in st.session_state:
     st.session_state.shopping_list = []
 
 # טופס להוספת מוצר
 with st.form(key="add_form"):
-    new_item = st.text_input("הוסיפי מוצר חדש:")
+    col1, col2 = st.columns([0.7, 0.3])
+    with col1:
+        item_name = st.text_input("שם מוצר")
+    with col2:
+        quantity = st.text_input("כמות", value="1")
+
     add_btn = st.form_submit_button("הוספה")
-    if add_btn and new_item.strip():
-        st.session_state.shopping_list.append(new_item.strip())
+    if add_btn and item_name.strip():
+        st.session_state.shopping_list.append({
+            "name": item_name.strip(),
+            "quantity": quantity.strip()
+        })
         st.rerun()
 
-# רשימת קניות
+# הצגת הרשימה
 st.subheader("📋 הרשימה שלך:")
+
 if st.session_state.shopping_list:
     for i, item in enumerate(st.session_state.shopping_list):
+        item_display = f"{item['name']} – {item['quantity']}"
         col1, col2 = st.columns([0.85, 0.15])
         with col1:
-            st.markdown(f'<div class="item-row">{item}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="item-row">{item_display}</div>', unsafe_allow_html=True)
         with col2:
             if st.button("🗑️", key=f"delete_{i}"):
                 st.session_state.shopping_list.pop(i)
                 st.rerun()
 else:
-    st.info("הרשימה ריקה כרגע. הוסיפי משהו 😊")
+    st.info("הרשימה ריקה. הוסיפי מוצר וכמות 😄")
 
