@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_extras.stylable_container import stylable_container
 
 st.set_page_config(page_title="צריך לקנות", layout="centered", page_icon="🛒")
 
