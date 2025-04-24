@@ -1,96 +1,103 @@
 import streamlit as st
+from streamlit_extras.stylable_container import stylable_container
 
-st.set_page_config(page_title="צריך לקנות", page_icon="🛒", layout="centered")
+st.set_page_config(page_title="צריך לקנות", layout="centered", page_icon="🛒")
 
-# CSS – עיצוב כהה עם גופן יפה
+# --- עיצוב כללי ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
-
-    html, body, [class*="css"]  {
-        background-color: #1E1E1E;
-        color: #1E1E1E;
-        font-family: 'Assistant', sans-serif;
-    }
-
-    .title {
-        text-align: center;
-        font-size: 3em;
-        color: #FFB74D;
-        margin-top: 0.5em;
-        margin-bottom: 0.2em;
-    }
-
-    .subtitle {
-        text-align: center;
-        font-size: 1.2em;
-        color: #B0BEC5;
-        margin-bottom: 2em;
-    }
-
-    .item-row {
-        background-color: #1E1E1E;
-        padding: 0.6em 1em;
-        border-radius: 10px;
-        margin-bottom: 0.4em;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: 1px solid #333;
-    }
-
-    .stTextInput > div > input,
-    .stNumberInput > div > input {
-        background-color: #2C2C2C;
-        color: white;
-    }
-
-    .stButton button {
-        background-color: #FFB74D;
-        color: black;
-        border-radius: 8px;
-        font-weight: bold;
-    }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Varela Round', sans-serif;
+        }
+        .title {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+            text-align: center;
+            color: #facc15;
+        }
+        .logo {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .product-card {
+            background-color: #1e293b;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .add-form input, .add-form button {
+            border-radius: 1rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+            margin: 0.25rem;
+        }
+        .add-form button {
+            background-color: #22c55e;
+            color: white;
+            border: none;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# כותרת
-st.markdown('<div class="title">צריך לקנות 🛍️</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">רשימת קניות עם כמויות – מינימליסטי ומדויק</div>', unsafe_allow_html=True)
+st.markdown("<div class='logo'>צריך לקנות</div>", unsafe_allow_html=True)
+st.markdown("<div class='title'>🛒 רשימת הקניות</div>", unsafe_allow_html=True)
 
-# התחלת הרשימה
-if "shopping_list" not in st.session_state:
-    st.session_state.shopping_list = []
+# --- רשימת קניות התחלתית ---
+if 'shopping_list' not in st.session_state:
+    st.session_state.shopping_list = [
+        {"item": "עגבניות", "qty": 2},
+        {"item": "עוף", "qty": 1},
+        {"item": "פלפלים", "qty": 3},
+    ]
 
-# טופס להוספת מוצר
-with st.form(key="add_form"):
-    col1, col2 = st.columns([0.7, 0.3])
-    with col1:
-        item_name = st.text_input("שם מוצר")
-    with col2:
-        quantity = st.text_input("כמות", value="1")
+# --- הצגת פריטים ---
+for i, entry in enumerate(st.session_state.shopping_list):
+    with st.container():
+        st.markdown(f"""
+            <div class='product-card'>
+                <span>{entry['qty']} × {entry['item']}</span>
+                <form action="" method="post">
+                    <button name="remove" type="submit" formaction="/?remove={i}" style="background: none; border: none; color: #f87171; font-size: 1rem;">❌</button>
+                </form>
+            </div>
+        """, unsafe_allow_html=True)
 
-    add_btn = st.form_submit_button("הוספה")
-    if add_btn and item_name.strip():
-        st.session_state.shopping_list.append({
-            "name": item_name.strip(),
-            "quantity": quantity.strip()
-        })
+# --- מחיקת פריט דרך קישור ---
+remove_index = st.experimental_get_query_params().get("remove")
+if remove_index:
+    try:
+        del st.session_state.shopping_list[int(remove_index[0])]
+        st.experimental_set_query_params()  # מחיקת הפרמטר מה-URL
         st.rerun()
+    except:
+        pass
 
-# הצגת הרשימה
-st.subheader("📋 הרשימה שלך:")
+# --- טופס הוספה ---
+st.markdown("<div class='add-form'>", unsafe_allow_html=True)
+with st.form(key="add_form"):
+    col1, col2, col3 = st.columns([3, 1, 1])
+    with col1:
+        item = st.text_input("שם המוצר", label_visibility="collapsed")
+    with col2:
+        qty = st.number_input("כמות", min_value=1, step=1, label_visibility="collapsed")
+    with col3:
+        submitted = st.form_submit_button("הוסף")
+    if submitted and item:
+        st.session_state.shopping_list.append({"item": item.strip(), "qty": qty})
+        st.rerun()
+st.markdown("</div>", unsafe_allow_html=True)
 
-if st.session_state.shopping_list:
-    for i, item in enumerate(st.session_state.shopping_list):
-        item_display = f"{item['name']} – {item['quantity']}"
-        col1, col2 = st.columns([0.85, 0.15])
-        with col1:
-            st.markdown(f'<div class="item-row">{item_display}</div>', unsafe_allow_html=True)
-        with col2:
-            if st.button("🗑️", key=f"delete_{i}"):
-                st.session_state.shopping_list.pop(i)
-                st.rerun()
-else:
-    st.info("הרשימה ריקה. הוסיפי מוצר וכמות 😄")
-
+# --- לינק לפונט ---
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+""", unsafe_allow_html=True)
