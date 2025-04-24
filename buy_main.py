@@ -9,7 +9,7 @@ st.markdown("""
 
     html, body, [class*="css"]  {
         background-color: #1E1E1E;
-        color: #ffffff;
+        color: #1E1E1E;
         font-family: 'Assistant', sans-serif;
     }
 
