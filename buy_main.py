@@ -8,7 +8,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600&display=swap');
 
     html, body, [class*="css"]  {
-        background-color: #121212;
+        background-color: #1E1E1E;
         color: #ffffff;
         font-family: 'Assistant', sans-serif;
     }
