@@ -77,7 +77,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<div class='logo'>צריך לקנות</div>", unsafe_allow_html=True)
 st.markdown("<div class='title'>🛒 רשימת הקניות</div>", unsafe_allow_html=True)
 
 # --- רשימת קניות התחלתית ---
