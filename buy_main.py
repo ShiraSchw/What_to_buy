@@ -21,4 +21,4 @@ for i, item in enumerate(st.session_state.shopping_list):
     col1.write(f"- {item}")
     if col2.button("❌", key=f"delete_{i}"):
         st.session_state.shopping_list.pop(i)
-        st.experimental_rerun()
+        st.rerun()
